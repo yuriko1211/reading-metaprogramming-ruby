@@ -27,6 +27,6 @@ class TryOut
     @middle_name&.upcase!
     @last_name.upcase!
 
-    @middle_name ? "#{@first_name} #{@middle_name} #{@last_name}" : "#{@first_name} #{@last_name}"
+    full_name
   end
 end
