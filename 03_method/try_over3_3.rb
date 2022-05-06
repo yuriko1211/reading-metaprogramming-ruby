@@ -1,4 +1,21 @@
+# bundle exec ruby -Itest test/03_method/test_try_over3_3.rb
 TryOver3 = Module.new
+
+class TryOver3::A1
+  def run_test
+    nil
+  end
+
+  def method_missing(method, **args)
+    # method に test_xxx みたいなのがやってくる
+    # そういうのがきたら run_testを実行するようにする
+    if method.to_s.start_with?("test_")
+      run_test
+    else
+      super
+    end
+  end
+end
 # Q1
 # 以下要件を満たすクラス TryOver3::A1 を作成してください。
 # - run_test というインスタンスメソッドを持ち、それはnilを返す
@@ -15,6 +32,22 @@ class TryOver3::A2
   def initialize(name, value)
     instance_variable_set("@#{name}", value)
     self.class.attr_accessor name.to_sym unless respond_to? name.to_sym
+  end
+end
+
+class TryOver3::A2Proxy
+  def initialize(a2)
+    @source = a2
+  end
+
+  def method_missing(method, args = nil)
+    send_args = args ? [method, args] : [method]
+    @source.public_send(*send_args)
+  end
+
+  def respond_to_missing?(name, include_private)
+    result = @source.respond_to?(name)
+    result ? result : super
   end
 end
 
@@ -35,6 +68,10 @@ module TryOver3::OriginalAccessor2
           self.class.define_method "#{attr_sym}?" do
             @attr == true
           end
+        else
+          if self.class.instance_methods.include?("#{attr_sym}?".to_sym)
+            self.class.undef_method("#{attr_sym}?")
+          end
         end
         @attr = value
       end
@@ -48,6 +85,30 @@ end
 # TryOver3::A4.runners = [:Hoge]
 # TryOver3::A4::Hoge.run
 # # => "run Hoge"
+
+class TryOver3::A4
+  class << self
+    def runners
+      @names
+    end
+
+    def runners=(names)
+      @names = names
+    end
+
+    def const_missing(const)
+      super unless @names.include?(const)
+
+      klass_instance = Class.new do |klass|
+        klass.define_singleton_method :run do
+          "run #{const.to_s}"
+        end
+      end
+
+      klass_instance
+    end
+  end
+end
 
 
 # Q5. チャレンジ問題！ 挑戦する方はテストの skip を外して挑戦してみてください。
