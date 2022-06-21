@@ -1,3 +1,5 @@
+#  bundle exec ruby -Itest test/05_class_definition/test_simple_record.rb
+
 # 次の仕様を満たす、SimpleModelモジュールを作成してください
 #
 # 1. include されたクラスがattr_accessorを使用すると、以下の追加動作を行う
@@ -14,4 +16,21 @@
 # 3. 履歴がある場合、すべての操作履歴を放棄し、値も初期状態に戻す `restore!` メソッドを作成する
 
 module SimpleModel
+  def self.attr_accessor(attr_name)
+    # writerを定義する
+    define_singleton_method("#{attr_name.to_s}=", ) do |set_value|
+      instance_variable_set("@{attr_name.to_s}", set_value)
+    end
+
+    # readerを定義する
+    define_singleton_method("#{attr_name.to_s}", ) do
+      instance_variable_get("@{attr_name.to_s}")
+    end
+  end
+
+  def initialize(**args)
+    args.each do |k, v|
+      instance_variable_set("@#{k.to_s}", v)
+    end
+  end
 end
