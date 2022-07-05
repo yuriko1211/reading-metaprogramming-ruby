@@ -16,15 +16,20 @@
 # 3. 履歴がある場合、すべての操作履歴を放棄し、値も初期状態に戻す `restore!` メソッドを作成する
 
 module SimpleModel
-  def self.attr_accessor(attr_name)
-    # writerを定義する
-    define_singleton_method("#{attr_name.to_s}=", ) do |set_value|
-      instance_variable_set("@{attr_name.to_s}", set_value)
-    end
+  def self.included(including_class) # 引数はincludeしたclass名が入る
+    p "include! including_class: #{including_class}, self: #{self}"
+    def including_class.attr_accessor(*attr_names)
+      attr_names.each do |attr_name|
+        # writerを定義する
+        define_method("#{attr_name.to_s}=", ) do |set_value|
+          instance_variable_set("@#{attr_name.to_s}", set_value)
+        end
 
-    # readerを定義する
-    define_singleton_method("#{attr_name.to_s}", ) do
-      instance_variable_get("@{attr_name.to_s}")
+        # readerを定義する
+        define_method("#{attr_name.to_s}", ) do
+          instance_variable_get("@#{attr_name.to_s}")
+        end
+      end
     end
   end
 
