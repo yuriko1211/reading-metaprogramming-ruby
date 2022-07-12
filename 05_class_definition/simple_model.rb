@@ -45,6 +45,12 @@ module SimpleModel
     @history = {}
   end
 
+  def changed?
+    @history.any? do |_k,v|
+      v
+    end
+  end
+
   def initialize(**args)
     initialize_histroy
     @initial_values = {}
