@@ -18,23 +18,35 @@
 module SimpleModel
   def self.included(including_class) # 引数はincludeしたclass名が入る
     def including_class.attr_accessor(*attr_names)
-      # history = {name:false, description: true}
+      # history = {name:false, description: false}
       # initial_values = {name: 'hoge', description: 'fuga'}
       attr_names.each do |attr_name|
         # writerを定義する
         define_method("#{attr_name.to_s}=", ) do |set_value|
           instance_variable_set("@#{attr_name.to_s}", set_value)
+          # 履歴を更新する
+          @history[attr_name] = true
         end
 
         # readerを定義する
         define_method("#{attr_name.to_s}", ) do
           instance_variable_get("@#{attr_name.to_s}")
         end
+
+        # ATTR_changed？ の作成
+        define_method("#{attr_name.to_s}_changed?") do
+          !!@history[attr_name]
+        end
       end
     end
   end
 
+  def initialize_histroy
+    @history = {}
+  end
+
   def initialize(**args)
+    initialize_histroy
     @initial_values = {}
     args.each do |k, v|
       instance_variable_set("@#{k.to_s}", v)
