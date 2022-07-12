@@ -41,8 +41,13 @@ module SimpleModel
     end
   end
 
-  def initialize_histroy
+  def initialize(**args)
     @history = {}
+    @initial_values = {}
+    args.each do |k, v|
+      instance_variable_set("@#{k.to_s}", v)
+      @initial_values[k] = v
+    end
   end
 
   def changed?
@@ -51,12 +56,10 @@ module SimpleModel
     end
   end
 
-  def initialize(**args)
-    initialize_histroy
-    @initial_values = {}
-    args.each do |k, v|
+  def restore!
+    @history = {}
+    @initial_values.each do |k,v|
       instance_variable_set("@#{k.to_s}", v)
-      @initial_values[k] = v
     end
   end
 end
