@@ -18,8 +18,6 @@
 module SimpleModel
   def self.included(including_class) # 引数はincludeしたclass名が入る
     def including_class.attr_accessor(*attr_names)
-      # history = {name:false, description: false}
-      # initial_values = {name: 'hoge', description: 'fuga'}
       attr_names.each do |attr_name|
         # writerを定義する
         define_method("#{attr_name.to_s}=", ) do |set_value|
