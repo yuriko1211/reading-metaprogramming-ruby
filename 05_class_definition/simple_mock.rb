@@ -1,3 +1,4 @@
+#  bundle exec ruby -Itest test/05_class_definition/test_simple_mock.rb
 # 次の仕様を満たすモジュール SimpleMock を作成してください
 #
 # SimpleMockは、次の2つの方法でモックオブジェクトを作成できます
@@ -37,3 +38,23 @@
 # obj.imitated_method #=> true
 # obj.called_times(:imitated_method) #=> 2
 # ```
+
+class SimpleMock
+  def expects(method_name, return_value)
+    self.define_singleton_method(method_name) do
+      return_value
+    end
+  end
+
+  def watch
+
+  end
+
+  def called_times
+
+  end
+
+  # def self.mock(obj)
+
+  # end
+end
