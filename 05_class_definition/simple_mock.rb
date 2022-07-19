@@ -39,7 +39,7 @@
 # obj.called_times(:imitated_method) #=> 2
 # ```
 
-class SimpleMock
+module SimpleMock
   def expects(method_name, return_value)
     self.define_singleton_method(method_name) do
       return_value
@@ -60,7 +60,12 @@ class SimpleMock
     instance_variable_get("@#{method_name.to_s}_count")
   end
 
-  # def self.mock(obj)
+  def self.new
+    obj = Object.new
+    obj.extend(SimpleMock)
+  end
 
-  # end
+  def self.mock(obj)
+
+  end
 end
