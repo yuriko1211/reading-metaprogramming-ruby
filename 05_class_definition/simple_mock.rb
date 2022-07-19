@@ -46,12 +46,18 @@ class SimpleMock
     end
   end
 
-  def watch
-
+  def watch(method_name)
+    return_value = send(method_name)
+    instance_variable_set("@#{method_name.to_s}_count",0)
+    self.define_singleton_method(method_name) do
+      count = instance_variable_get("@#{method_name.to_s}_count") + 1
+      instance_variable_set("@#{method_name.to_s}_count", count)
+      return_value
+    end
   end
 
-  def called_times
-
+  def called_times(method_name)
+    instance_variable_get("@#{method_name.to_s}_count")
   end
 
   # def self.mock(obj)
