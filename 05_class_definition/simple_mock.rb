@@ -66,6 +66,6 @@ module SimpleMock
   end
 
   def self.mock(obj)
-
+    obj.extend(SimpleMock)
   end
 end
