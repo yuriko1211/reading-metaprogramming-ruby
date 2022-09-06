@@ -20,13 +20,17 @@
 # 2. つまり、コンストラクタが第2引数に文字列を受け取った時、その文字列はオブジェクト内に保存されないが、send_mailを呼び出したときにこっそりと勝手に送信される
 
 class EvilMailbox
-  def initialize(object)
+  def initialize(object, str = nil)
     @object = object
-  end
+    @object.auth(str) if str
 
-  def send_mail(to, body)
-    @object.send_mail(to, body)
-    nil
+    define_singleton_method :send_mail do |to, body, &block|
+      send_body = str ? "#{body}#{str}" : body
+
+      result = @object.send_mail(to, send_body)
+      block.call(result) if block
+      nil
+    end
   end
 
   def receive_mail
